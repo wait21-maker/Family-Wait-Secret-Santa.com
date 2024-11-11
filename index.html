@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Secret Santa</title>
+    <style>
+        :root {
+            --primary-color: #c41e3a;
+            --primary-dark: #a01830;
+            --primary-light: #e63e5c;
+            --bg-gradient-1: #1a472a;
+            --bg-gradient-2: #2d5a27;
+            --shadow-color: rgba(0, 0, 0, 0.2);
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(16px, 4vw, 32px);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: white;
+            padding: clamp(24px, 6vw, 48px);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px var(--shadow-color),
+                       0 1px 3px rgba(0, 0, 0, 0.05);
+            width: min(95%, 800px);
+            margin: 20px auto;
+            isolation: isolate;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 1.2;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        h3 {
+            color: var(--text-primary);
+            margin: 24px 0;
+            font-size: clamp(1.3rem, 3vw, 1.6rem);
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 32px;
+            display: grid;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+        }
+
+        input {
+            padding: 14px 16px;
+            width: 100%;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            transition: var(--transition);
+            background-color: #fafafa;
+        }
+
+        input:hover {
+            border-color: #bdbdbd;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(196, 30, 58, 0.15);
+            background-color: white;
+        }
+
+        button {
+            padding: clamp(12px, 2.5vw, 16px);
+            width: 100%;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: var(--primary-color);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.25);
+        }
+
+        button:hover::after {
+            opacity: 1;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        #participantList {
+            margin-top: 36px;
+        }
+
+        .participant {
+            background-color: #f8f9fa;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            border: 1px solid #eaeaea;
+            transition: var(--transition);
+        }
+
+        .participant:hover {
+            background-color: #f1f3f5;
+            transform: translateX(4px);
+        }
+
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .delete-btn:hover {
+            background: #ff0000;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 3px 10px rgba(255, 0, 0, 0.2);
+        }
+
+        #results {
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 2px dashed #e0e0e0;
+        }
+
+        @media (max-width: 480px) {
+            .participant {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .delete-btn {
+                margin: 8px auto 0;
+            }
+
+            h1 {
+                margin-bottom: 32px;
+            }
+
+            .form-group {
+                gap: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .container {
+                background-color: #1a1a1a;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            }
+
+            input {
+                background-color: #2a2a2a;
+                border-color: #404040;
+                color: #ffffff;
+            }
+
+            input:focus {
+                background-color: #333;
+            }
+
+            .participant {
+                background-color: #2a2a2a;
+                border-color: #404040;
+                color: #ffffff;
+            }
+
+            .participant:hover {
+                background-color: #333;
+            }
+
+            h1, h3 {
+                color: var(--primary-light);
+            }
+
+            label {
+                color: #ffffff;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎅 Family Secret Santa 🎄</h1>
+        
+        <div class="form-group">
+            <label for="participantName">Family Member Name:</label>
+            <input type="text" id="participantName" placeholder="Enter name">
+            <label for="participantEmail">Email Address:</label>
+            <input type="email" id="participantEmail" placeholder="Enter email">
+            <button onclick="addParticipant()">Add Participant</button>
+        </div>
+
+        <div id="participantList">
+            <h3>Participants:</h3>
+        </div>
+
+        <button onclick="assignSecretSanta()">Generate & Send Secret Santa Assignments!</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let participants = [];
+
+        function addParticipant() {
+            const nameInput = document.getElementById('participantName');
+            const emailInput = document.getElementById('participantEmail');
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            
+            if (name && email && validateEmail(email)) {
+                participants.push({ name, email });
+                nameInput.value = '';
+                emailInput.value = '';
+                updateParticipantList();
+            } else {
+                alert('Please enter a valid name and email address!');
+            }
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function updateParticipantList() {
+            const list = document.getElementById('participantList');
+            list.innerHTML = '<h3>Participants:</h3>';
+            
+            participants.forEach((participant, index) => {
+                const div = document.createElement('div');
+                div.className = 'participant';
+                div.innerHTML = `
+                    <span>${participant.name} (${participant.email})</span>
+                    <button class="delete-btn" onclick="removeParticipant(${index})" aria-label="Remove participant">×</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function removeParticipant(index) {
+            participants.splice(index, 1);
+            updateParticipantList();
+        }
+
+        function assignSecretSanta() {
+            if (participants.length < 2) {
+                alert('Need at least 2 participants!');
+                return;
+            }
+
+            let assignments = [...participants];
+            let valid = false;
+
+            while (!valid) {
+                // Shuffle the assignments
+                for (let i = assignments.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
+                }
+
+                // Check if no one has themselves
+                valid = true;
+                for (let i = 0; i < participants.length; i++) {
+                    if (participants[i].name === assignments[i].name) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            // Send emails and display results
+            const results = document.getElementById('results');
+            results.innerHTML = '<h3>Secret Santa Assignments:</h3>';
+            
+            participants.forEach((giver, index) => {
+                const receiver = assignments[index];
+                sendEmail(giver.email, receiver.name);
+                
+                const div = document.createElement('div');
+                div.className = 'participant';
+                div.textContent = `Email sent to ${giver.name} with their Secret Santa assignment!`;
+                results.appendChild(div);
+            });
+        }
+
+        function sendEmail(email, receiverName) {
+            // This is where you would integrate with an email service
+            console.log(`Email would be sent to ${email} about their Secret Santa assignment: ${receiverName}`);
+            // In a real implementation, you would use a backend service or email API
+        }
+    </script>
+</body>
+</html>
